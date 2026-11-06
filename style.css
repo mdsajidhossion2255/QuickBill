@@ -1,0 +1,195 @@
+/* =========================
+   QuickBill - Main Design
+========================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary: #16a34a;
+    --primary-dark: #15803d;
+    --background: #f3f6f4;
+    --white: #ffffff;
+    --text: #17231b;
+    --muted: #6b7280;
+    --border: #e5e7eb;
+    --danger: #dc2626;
+}
+
+body {
+    font-family: Arial, "Noto Sans Bengali", sans-serif;
+    background: var(--background);
+    color: var(--text);
+    min-height: 100vh;
+}
+
+/* Header */
+
+.header {
+    background: var(--white);
+    padding: 22px 6%;
+    border-bottom: 1px solid var(--border);
+}
+
+.logo {
+    font-size: 30px;
+    font-weight: 800;
+    color: var(--text);
+}
+
+.logo span {
+    color: var(--primary);
+}
+
+.header p {
+    color: var(--muted);
+    font-size: 13px;
+    margin-top: 4px;
+}
+
+/* Main Container */
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 35px auto;
+}
+
+/* Welcome Section */
+
+.welcome {
+    margin-bottom: 30px;
+}
+
+.welcome h1 {
+    font-size: 27px;
+    margin-bottom: 10px;
+}
+
+.welcome p {
+    color: var(--muted);
+    font-size: 15px;
+}
+
+/* Dashboard */
+
+.dashboard {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin-bottom: 35px;
+}
+
+.card {
+    background: var(--white);
+    padding: 25px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.03);
+}
+
+.card h3 {
+    font-size: 15px;
+    color: var(--muted);
+    font-weight: 500;
+    margin-bottom: 14px;
+}
+
+.card h2 {
+    font-size: 28px;
+    color: var(--primary-dark);
+}
+
+/* Menu Section */
+
+.menu {
+    background: var(--white);
+    padding: 25px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+}
+
+.menu h2 {
+    font-size: 21px;
+    margin-bottom: 22px;
+}
+
+.menu-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+/* Buttons */
+
+button {
+    font-family: inherit;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.menu-grid button {
+    min-height: 65px;
+    padding: 15px;
+    border: 1px solid #bbf7d0;
+    border-radius: 10px;
+    background: #f0fdf4;
+    color: var(--primary-dark);
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.menu-grid button:hover {
+    background: var(--primary);
+    color: var(--white);
+    border-color: var(--primary);
+}
+
+/* Footer */
+
+footer {
+    text-align: center;
+    padding: 25px 15px;
+    color: var(--muted);
+    font-size: 13px;
+    margin-top: 40px;
+}
+
+/* Mobile Responsive */
+
+@media (max-width: 700px) {
+
+    .header {
+        padding: 18px 5%;
+    }
+
+    .container {
+        width: 92%;
+        margin: 25px auto;
+    }
+
+    .welcome h1 {
+        font-size: 22px;
+    }
+
+    .dashboard {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .card {
+        padding: 20px;
+    }
+
+    .menu-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .menu {
+        padding: 18px;
+    }
+
+}
