@@ -1,6 +1,8 @@
-/* ==================================
-   QuickBill - Main Application
-================================== */
+
+/* =========================================
+   QUICKBILL - RESTAURANT BILLING SOFTWARE
+   Complete JavaScript Application
+========================================= */
 
 const DB = {
     foods: "qb_foods",
@@ -8,20 +10,22 @@ const DB = {
     settings: "qb_settings"
 };
 
-const getData = (key, fallback) => {
+function loadData(key, fallback) {
     try {
-        return JSON.parse(localStorage.getItem(key)) ?? fallback;
+        const value = JSON.parse(localStorage.getItem(key));
+        return value ?? fallback;
     } catch {
         return fallback;
     }
-};
+}
 
-const saveData = (key, data) =>
-    localStorage.setItem(key, JSON.stringify(data));
+function saveData(key, value) {
+    localStorage.setItem(key, JSON.stringify(value));
+}
 
-let foods = getData(DB.foods, []);
-let bills = getData(DB.bills, []);
-let settings = getData(DB.settings, {
+let foods = loadData(DB.foods, []);
+let bills = loadData(DB.bills, []);
+let settings = loadData(DB.settings, {
     name: "My Restaurant",
     address: "",
     phone: ""
@@ -33,44 +37,48 @@ let currentPage = "dashboard";
 
 const app = document.querySelector(".container");
 
-const money = amount =>
-    "৳ " + Number(amount || 0).toFixed(2);
+function money(value) {
+    return "৳ " + Number(value || 0).toFixed(2);
+}
 
-const today = () =>
-    new Date().toLocaleDateString("en-CA");
+function today() {
+    const d = new Date();
+    return [
+        d.getFullYear(),
+        String(d.getMonth() + 1).padStart(2, "0"),
+        String(d.getDate()).padStart(2, "0")
+    ].join("-");
+}
 
-const escapeHTML = value =>
-    String(value ?? "").replace(/[&<>"']/g, char => ({
+function escapeHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
         "&": "&amp;",
         "<": "&lt;",
         ">": "&gt;",
         '"': "&quot;",
         "'": "&#39;"
     })[char]);
-
-function button(text, action) {
-    return `<button type="button" data-action="${action}">${text}</button>`;
 }
 
-function render() {
-    if (currentPage === "dashboard") showDashboard();
-    if (currentPage === "foods") showFoods();
-    if (currentPage === "billing") showBilling();
-    if (currentPage === "history") showHistory();
-    if (currentPage === "reports") showReports();
-    if (currentPage === "settings") showSettings();
+function makeButton(label, action, extra = "") {
+    return `<button type="button" data-action="${action}" ${extra}>${label}</button>`;
 }
 
-/* Dashboard */
+/* =========================================
+   DASHBOARD
+========================================= */
 
 function showDashboard() {
     const dailyBills = bills.filter(b => b.date === today());
-    const sales = dailyBills.reduce((sum, b) => sum + b.total, 0);
+
+    const sales = dailyBills.reduce(
+        (sum, bill) => sum + bill.total, 0
+    );
 
     app.innerHTML = `
         <section class="welcome">
-            <h1>QuickBill Dashboard</h1>
-            <p>আপনার রেস্টুরেন্টের আজকের হিসাব</p>
+            <h1>স্বাগতম QuickBill-এ</h1>
+            <p>আপনার রেস্টুরেন্টের বিল ও বিক্রির হিসাব</p>
         </section>
 
         <section class="dashboard">
@@ -78,10 +86,12 @@ function showDashboard() {
                 <h3>আজকের বিক্রি</h3>
                 <h2>${money(sales)}</h2>
             </div>
+
             <div class="card">
                 <h3>আজকের মোট বিল</h3>
                 <h2>${dailyBills.length}</h2>
             </div>
+
             <div class="card">
                 <h3>খাবারের আইটেম</h3>
                 <h2>${foods.length}</h2>
@@ -90,18 +100,21 @@ function showDashboard() {
 
         <section class="menu">
             <h2>সফটওয়্যার মেনু</h2>
+
             <div class="menu-grid">
-                ${button("＋ নতুন বিল তৈরি", "billing")}
-                ${button("খাবারের তালিকা", "foods")}
-                ${button("বিলের ইতিহাস", "history")}
-                ${button("দৈনিক রিপোর্ট", "reports")}
-                ${button("রেস্টুরেন্ট সেটিংস", "settings")}
+                ${makeButton("＋ নতুন বিল তৈরি", "billing")}
+                ${makeButton("খাবারের তালিকা", "foods")}
+                ${makeButton("বিলের ইতিহাস", "history")}
+                ${makeButton("দৈনিক রিপোর্ট", "reports")}
+                ${makeButton("রেস্টুরেন্ট সেটিংস", "settings")}
             </div>
         </section>
     `;
 }
 
-/* Food Management */
+/* =========================================
+   FOOD MANAGEMENT
+========================================= */
 
 function showFoods() {
     app.innerHTML = `
@@ -109,30 +122,38 @@ function showFoods() {
 
         <form id="foodForm">
             <input name="name" placeholder="খাবারের নাম" required>
-            <input name="price" type="number" min="0.01"
-                step="0.01" placeholder="দাম (৳)" required>
+
+            <input name="price" type="number"
+                min="0.01" step="0.01"
+                placeholder="খাবারের দাম" required>
+
             <button type="submit">খাবার যোগ করুন</button>
         </form>
 
-        <h3>সকল খাবার (${foods.length})</h3>
-
         <div class="menu">
+            <h3>সকল খাবার (${foods.length})</h3>
+
             ${foods.length ? foods.map(food => `
                 <div class="food-row">
                     <strong>${escapeHTML(food.name)}</strong>
                     <span>${money(food.price)}</span>
-                    ${button("সম্পাদনা", "edit-food")}
-                    ${button("ডিলিট", "delete-food")}
-                    <input type="hidden" value="${food.id}">
+
+                    ${makeButton("সম্পাদনা", "edit-food",
+                        `data-id="${food.id}"`)}
+
+                    ${makeButton("ডিলিট", "delete-food",
+                        `data-id="${food.id}"`)}
                 </div>
             `).join("") : "<p>এখনো কোনো খাবার যোগ করা হয়নি।</p>"}
         </div>
 
-        ${button("← Dashboard", "dashboard")}
+        ${makeButton("← Dashboard", "dashboard")}
     `;
 }
 
-/* Billing */
+/* =========================================
+   BILLING SYSTEM
+========================================= */
 
 function showBilling() {
     app.innerHTML = `
@@ -140,11 +161,13 @@ function showBilling() {
 
         <div class="menu">
             <label>খাবার নির্বাচন করুন</label>
+
             <select id="foodSelect">
                 <option value="">খাবার নির্বাচন করুন</option>
-                ${foods.map(f => `
-                    <option value="${f.id}">
-                        ${escapeHTML(f.name)} - ${money(f.price)}
+
+                ${foods.map(food => `
+                    <option value="${food.id}">
+                        ${escapeHTML(food.name)} - ${money(food.price)}
                     </option>
                 `).join("")}
             </select>
@@ -152,9 +175,7 @@ function showBilling() {
             <label>পরিমাণ</label>
             <input id="foodQty" type="number" min="1" value="1">
 
-            <button type="button" data-action="add-cart">
-                বিলের তালিকায় যোগ করুন
-            </button>
+            ${makeButton("বিলে যোগ করুন", "add-cart")}
         </div>
 
         <h3>বিলের তালিকা</h3>
@@ -163,78 +184,95 @@ function showBilling() {
 
         <div class="menu">
             <label>ডিসকাউন্ট (৳)</label>
-            <input id="discount" type="number" min="0"
-                step="0.01" value="${discount}">
 
-            <h3 id="billTotal">মোট: ${money(cartTotal())}</h3>
+            <input id="discount" type="number"
+                min="0" step="0.01" value="${discount}">
 
-            <button type="button" data-action="save-bill">
-                বিল সংরক্ষণ করুন
-            </button>
+            <h3 id="subtotal">সর্বমোট: ${money(cartSubtotal())}</h3>
+            <h3 id="billTotal">পরিশোধযোগ্য: ${money(cartTotal())}</h3>
 
-            <button type="button" data-action="clear-cart">
-                বিল মুছে ফেলুন
-            </button>
+            ${makeButton("বিল সংরক্ষণ করুন", "save-bill")}
+            ${makeButton("বিল খালি করুন", "clear-cart")}
         </div>
 
-        ${button("← Dashboard", "dashboard")}
+        ${makeButton("← Dashboard", "dashboard")}
     `;
 
     updateCart();
 }
 
-function cartTotal() {
-    const subtotal = cart.reduce(
+function cartSubtotal() {
+    return cart.reduce(
         (sum, item) => sum + item.price * item.qty, 0
     );
+}
 
-    return Math.max(0, subtotal - discount);
+function cartTotal() {
+    return Math.max(0, cartSubtotal() - discount);
 }
 
 function updateCart() {
     const list = document.getElementById("cartList");
+
     if (!list) return;
 
     list.innerHTML = cart.length ? cart.map(item => `
         <div class="food-row">
             <strong>${escapeHTML(item.name)}</strong>
+
             <span>${item.qty} × ${money(item.price)}</span>
+
             <strong>${money(item.qty * item.price)}</strong>
-            <button type="button" data-action="remove-cart"
-                data-id="${item.id}">বাদ দিন</button>
+
+            ${makeButton("বাদ দিন", "remove-cart",
+                `data-id="${item.id}"`)}
         </div>
-    `).join("") : "<p>বিলের তালিকা খালি।</p>";
+    `).join("") : "<p>বিলে কোনো খাবার যোগ করা হয়নি।</p>";
+
+    document.getElementById("subtotal").textContent =
+        "সর্বমোট: " + money(cartSubtotal());
 
     document.getElementById("billTotal").textContent =
-        "মোট: " + money(cartTotal());
+        "পরিশোধযোগ্য: " + money(cartTotal());
 }
 
-/* Bill History */
+/* =========================================
+   BILL HISTORY
+========================================= */
 
 function showHistory() {
     app.innerHTML = `
         <h2>বিলের ইতিহাস</h2>
 
-        ${bills.length ? bills.slice().reverse().map(b => `
+        ${bills.length ? bills.slice().reverse().map(bill => `
             <div class="card">
-                <strong>বিল #${escapeHTML(b.id)}</strong>
-                <p>তারিখ: ${escapeHTML(b.date)}</p>
-                <p>আইটেম: ${b.items.length}</p>
-                <h3>${money(b.total)}</h3>
-                <button type="button" data-action="print-bill"
-                    data-id="${b.id}">প্রিন্ট / PDF</button>
-            </div>
-        `).join("") : "<p>কোনো বিল সংরক্ষণ করা হয়নি।</p>"}
+                <h3>বিল #${escapeHTML(bill.id)}</h3>
 
-        ${button("← Dashboard", "dashboard")}
+                <p>তারিখ: ${escapeHTML(bill.date)}</p>
+                <p>খাবারের সংখ্যা: ${bill.items.length}</p>
+                <p>ডিসকাউন্ট: ${money(bill.discount)}</p>
+
+                <h2>${money(bill.total)}</h2>
+
+                ${makeButton("বিল প্রিন্ট / PDF", "print-bill",
+                    `data-id="${bill.id}"`)}
+            </div>
+        `).join("") : "<p>কোনো বিল পাওয়া যায়নি।</p>"}
+
+        ${makeButton("← Dashboard", "dashboard")}
     `;
 }
 
-/* Daily Report */
+/* =========================================
+   DAILY REPORT
+========================================= */
 
 function showReports() {
     const daily = bills.filter(b => b.date === today());
-    const total = daily.reduce((sum, b) => sum + b.total, 0);
+
+    const total = daily.reduce(
+        (sum, bill) => sum + bill.total, 0
+    );
 
     app.innerHTML = `
         <h2>দৈনিক রিপোর্ট</h2>
@@ -245,40 +283,48 @@ function showReports() {
             <h2>মোট বিক্রি: ${money(total)}</h2>
         </div>
 
-        ${button("← Dashboard", "dashboard")}
+        ${makeButton("← Dashboard", "dashboard")}
     `;
 }
 
-/* Restaurant Settings */
+/* =========================================
+   RESTAURANT SETTINGS
+========================================= */
 
 function showSettings() {
     app.innerHTML = `
         <h2>রেস্টুরেন্ট সেটিংস</h2>
 
         <form id="settingsForm">
+
             <label>রেস্টুরেন্টের নাম</label>
-            <input name="name" value="${escapeHTML(settings.name)}" required>
+            <input name="name"
+                value="${escapeHTML(settings.name)}" required>
 
             <label>ঠিকানা</label>
-            <input name="address" value="${escapeHTML(settings.address)}">
+            <input name="address"
+                value="${escapeHTML(settings.address)}">
 
             <label>ফোন নম্বর</label>
-            <input name="phone" value="${escapeHTML(settings.phone)}">
+            <input name="phone"
+                value="${escapeHTML(settings.phone)}">
 
-            <button type="submit">সেটিংস সংরক্ষণ করুন</button>
+            <button type="submit">তথ্য সংরক্ষণ করুন</button>
         </form>
 
-        ${button("← Dashboard", "dashboard")}
+        ${makeButton("← Dashboard", "dashboard")}
     `;
 }
 
-/* Print Receipt / Save as PDF */
+/* =========================================
+   RECEIPT PRINT AND PDF
+========================================= */
 
 function printReceipt(bill) {
     const receipt = window.open("", "_blank");
 
     if (!receipt) {
-        alert("প্রিন্ট উইন্ডো খুলতে পারেনি। পপ-আপ অনুমতি দিন।");
+        alert("প্রিন্ট উইন্ডো খোলা যায়নি। ব্রাউজারের পপ-আপ অনুমতি দিন।");
         return;
     }
 
@@ -288,20 +334,45 @@ function printReceipt(bill) {
         <head>
             <meta charset="UTF-8">
             <title>QuickBill Receipt</title>
+
             <style>
-                body { font-family: Arial, sans-serif; padding: 20px; }
-                h2, p { text-align: center; }
-                table { width: 100%; border-collapse: collapse; }
-                td, th { border-bottom: 1px solid #ccc; padding: 8px; }
-                .total { text-align: right; margin-top: 20px; }
+                body {
+                    font-family: Arial, sans-serif;
+                    padding: 20px;
+                    color: #111;
+                }
+
+                h2, .center {
+                    text-align: center;
+                }
+
+                table {
+                    width: 100%;
+                    border-collapse: collapse;
+                }
+
+                th, td {
+                    padding: 9px 5px;
+                    border-bottom: 1px solid #ddd;
+                    text-align: left;
+                }
+
+                .total {
+                    text-align: right;
+                    margin-top: 20px;
+                }
             </style>
         </head>
+
         <body>
             <h2>${escapeHTML(settings.name)}</h2>
-            <p>${escapeHTML(settings.address)}</p>
-            <p>${escapeHTML(settings.phone)}</p>
+
+            <p class="center">${escapeHTML(settings.address)}</p>
+            <p class="center">${escapeHTML(settings.phone)}</p>
+
             <hr>
-            <p>বিল #${escapeHTML(bill.id)}</p>
+
+            <p>বিল নম্বর: ${escapeHTML(bill.id)}</p>
             <p>তারিখ: ${escapeHTML(bill.date)}</p>
 
             <table>
@@ -310,6 +381,7 @@ function printReceipt(bill) {
                     <th>পরিমাণ</th>
                     <th>মোট</th>
                 </tr>
+
                 ${bill.items.map(item => `
                     <tr>
                         <td>${escapeHTML(item.name)}</td>
@@ -320,11 +392,18 @@ function printReceipt(bill) {
             </table>
 
             <div class="total">
+                <p>সর্বমোট: ${money(
+                    bill.items.reduce(
+                        (sum, item) => sum + item.price * item.qty, 0
+                    )
+                )}</p>
+
                 <p>ডিসকাউন্ট: ${money(bill.discount)}</p>
-                <h3>সর্বমোট: ${money(bill.total)}</h3>
+
+                <h3>পরিশোধযোগ্য: ${money(bill.total)}</h3>
             </div>
 
-            <p>ধন্যবাদ, আবার আসবেন!</p>
+            <p class="center">ধন্যবাদ, আবার আসবেন!</p>
 
             <script>
                 window.onload = () => window.print();
@@ -336,23 +415,34 @@ function printReceipt(bill) {
     receipt.document.close();
 }
 
-/* All Button Actions */
+/* =========================================
+   ALL BUTTON EVENTS
+========================================= */
 
 app.addEventListener("click", event => {
     const btn = event.target.closest("[data-action]");
+
     if (!btn) return;
 
     const action = btn.dataset.action;
 
-    if (["dashboard", "foods", "billing", "history",
-         "reports", "settings"].includes(action)) {
+    /* Navigation */
+
+    if ([
+        "dashboard", "foods", "billing",
+        "history", "reports", "settings"
+    ].includes(action)) {
         currentPage = action;
         render();
+        return;
     }
+
+    /* Add Food To Cart */
 
     if (action === "add-cart") {
         const id = document.getElementById("foodSelect").value;
         const qty = Number(document.getElementById("foodQty").value);
+
         const food = foods.find(f => f.id === id);
 
         if (!food || !Number.isInteger(qty) || qty < 1) {
@@ -362,22 +452,36 @@ app.addEventListener("click", event => {
 
         const existing = cart.find(item => item.id === id);
 
-        if (existing) existing.qty += qty;
-        else cart.push({ ...food, qty });
+        if (existing) {
+            existing.qty += qty;
+        } else {
+            cart.push({ ...food, qty });
+        }
 
         updateCart();
+        return;
     }
+
+    /* Remove Cart Item */
 
     if (action === "remove-cart") {
         cart = cart.filter(item => item.id !== btn.dataset.id);
         updateCart();
+        return;
     }
 
+    /* Clear Cart */
+
     if (action === "clear-cart") {
+        if (!confirm("বিলের সব খাবার মুছে ফেলবেন?")) return;
+
         cart = [];
         discount = 0;
         render();
+        return;
     }
+
+    /* Save Bill */
 
     if (action === "save-bill") {
         if (!cart.length) {
@@ -400,16 +504,19 @@ app.addEventListener("click", event => {
         discount = 0;
 
         alert("বিল সফলভাবে সংরক্ষণ হয়েছে!");
+
         currentPage = "history";
         render();
+        return;
     }
 
+    /* Edit Food */
+
     if (action === "edit-food") {
-        const id = btn.nextElementSibling.nextElementSibling.value;
-        const food = foods.find(f => f.id === id);
+        const food = foods.find(f => f.id === btn.dataset.id);
         if (!food) return;
 
-        const name = prompt("নতুন খাবারের নাম:", food.name);
+        const name = prompt("খাবারের নতুন নাম:", food.name);
         if (name === null) return;
 
         const price = prompt("নতুন দাম:", food.price);
@@ -424,50 +531,70 @@ app.addEventListener("click", event => {
 
         food.name = name.trim();
         food.price = newPrice;
+
         saveData(DB.foods, foods);
         render();
+        return;
     }
+
+    /* Delete Food */
 
     if (action === "delete-food") {
-        const id = btn.nextElementSibling.value;
-
         if (!confirm("এই খাবারটি মুছে ফেলবেন?")) return;
 
-        foods = foods.filter(f => f.id !== id);
+        foods = foods.filter(f => f.id !== btn.dataset.id);
+
         saveData(DB.foods, foods);
         render();
+        return;
     }
 
+    /* Print Saved Bill */
+
     if (action === "print-bill") {
-        const bill = bills.find(b => String(b.id) === btn.dataset.id);
+        const bill = bills.find(
+            b => String(b.id) === btn.dataset.id
+        );
+
         if (bill) printReceipt(bill);
+        return;
     }
 });
 
-/* Form Actions */
+/* =========================================
+   FORM SUBMISSION
+========================================= */
 
 app.addEventListener("submit", event => {
     event.preventDefault();
 
+    /* Add New Food */
+
     if (event.target.id === "foodForm") {
         const data = new FormData(event.target);
+
         const name = String(data.get("name")).trim();
         const price = Number(data.get("price"));
 
         if (!name || !Number.isFinite(price) || price <= 0) {
-            alert("সঠিক খাবারের নাম ও দাম দিন।");
+            alert("সঠিক খাবারের নাম ও দাম লিখুন।");
             return;
         }
 
         foods.push({
-            id: String(Date.now()),
+            id: String(Date.now()) + Math.random().toString(16).slice(2),
             name,
             price
         });
 
         saveData(DB.foods, foods);
         render();
+
+        alert("খাবার সফলভাবে যোগ হয়েছে!");
+        return;
     }
+
+    /* Save Restaurant Settings */
 
     if (event.target.id === "settingsForm") {
         const data = new FormData(event.target);
@@ -479,20 +606,44 @@ app.addEventListener("submit", event => {
         };
 
         saveData(DB.settings, settings);
+
         alert("রেস্টুরেন্টের তথ্য সংরক্ষণ হয়েছে!");
         render();
     }
 });
 
-/* Discount Update */
+/* =========================================
+   DISCOUNT CALCULATION
+========================================= */
 
 app.addEventListener("input", event => {
-    if (event.target.id === "discount") {
-        discount = Math.max(0, Number(event.target.value) || 0);
-        updateCart();
+    if (event.target.id !== "discount") return;
+
+    discount = Math.max(0, Number(event.target.value) || 0);
+
+    if (discount > cartSubtotal()) {
+        discount = cartSubtotal();
+        event.target.value = discount;
     }
+
+    updateCart();
 });
 
-/* Start Application */
+/* =========================================
+   START APPLICATION
+========================================= */
+
+function render() {
+    const pages = {
+        dashboard: showDashboard,
+        foods: showFoods,
+        billing: showBilling,
+        history: showHistory,
+        reports: showReports,
+        settings: showSettings
+    };
+
+    (pages[currentPage] || showDashboard)();
+}
 
 render();
