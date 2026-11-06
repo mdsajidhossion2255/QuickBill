@@ -1,282 +1,294 @@
+
 <!DOCTYPE html>
 <html lang="bn">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#15803d">
-
+  <meta name="description" content="QuickBill Restaurant Management and Billing Software">
   <title>QuickBill - Restaurant Management</title>
 
-  <meta name="description" content="QuickBill Restaurant Management and Billing Software">
-
   <link rel="stylesheet" href="style.css">
-
   <script src="script.js" defer></script>
 </head>
 
 <body>
 
-  <div class="app" id="app">
+<div class="app" id="app">
 
-    <!-- Sidebar -->
-    <aside class="sidebar" id="sidebar">
+  <!-- Mobile Sidebar Overlay -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-      <div class="brand">
-        <div class="brand-icon">QB</div>
-        <div class="brand-info">
-          <h2>QuickBill</h2>
-          <span id="brandSubtitle">Restaurant Manager</span>
-        </div>
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+
+    <div class="brand">
+      <div class="brand-icon">QB</div>
+      <div class="brand-info">
+        <h2>QuickBill</h2>
+        <span id="brandSubtitle">Restaurant Manager</span>
       </div>
+    </div>
 
-      <div class="restaurant-mini">
-        <div class="restaurant-logo" id="sidebarRestaurantLogo">🍽️</div>
+    <div class="restaurant-mini">
+      <div class="restaurant-logo" id="sidebarRestaurantLogo">🍽️</div>
+      <div>
+        <h3 id="sidebarRestaurantName">My Restaurant</h3>
+        <p id="sidebarRestaurantAddress">Restaurant Address</p>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+
+      <p class="nav-heading" data-i18n="mainMenu">প্রধান মেনু</p>
+
+      <button type="button" class="nav-link active" data-page="dashboard">
+        <span class="nav-icon">▦</span>
+        <span data-i18n="dashboard">ড্যাশবোর্ড</span>
+      </button>
+
+      <button type="button" class="nav-link" data-page="billing">
+        <span class="nav-icon">🧾</span>
+        <span data-i18n="newBill">নতুন বিল</span>
+      </button>
+
+      <button type="button" class="nav-link" data-page="foods">
+        <span class="nav-icon">🍛</span>
+        <span data-i18n="foodMenu">খাবারের মেনু</span>
+      </button>
+
+      <button type="button" class="nav-link" data-page="categories">
+        <span class="nav-icon">▤</span>
+        <span data-i18n="categories">খাবারের বিভাগ</span>
+      </button>
+
+      <p class="nav-heading" data-i18n="management">ম্যানেজমেন্ট</p>
+
+      <button type="button" class="nav-link" data-page="history">
+        <span class="nav-icon">📋</span>
+        <span data-i18n="billHistory">বিলের ইতিহাস</span>
+      </button>
+
+      <button type="button" class="nav-link" data-page="reports">
+        <span class="nav-icon">📊</span>
+        <span data-i18n="reports">বিক্রির রিপোর্ট</span>
+      </button>
+
+      <button type="button" class="nav-link" data-page="settings">
+        <span class="nav-icon">⚙️</span>
+        <span data-i18n="settings">সেটিংস</span>
+      </button>
+
+    </nav>
+
+    <div class="sidebar-footer">
+      <span>QuickBill</span>
+      <small>Version 2.0</small>
+    </div>
+
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+
+    <!-- Topbar -->
+    <header class="topbar">
+
+      <div class="topbar-left">
+
+        <button
+          type="button"
+          class="menu-toggle"
+          id="menuToggle"
+          aria-label="Toggle Menu"
+          aria-controls="sidebar"
+          aria-expanded="false">
+          ☰
+        </button>
+
         <div>
-          <h3 id="sidebarRestaurantName">My Restaurant</h3>
-          <p id="sidebarRestaurantAddress">Restaurant Address</p>
+          <h1 id="pageTitle">ড্যাশবোর্ড</h1>
+          <p id="pageSubtitle" data-i18n="dashboardSubtitle">
+            রেস্টুরেন্টের হিসাব
+          </p>
         </div>
+
       </div>
 
-      <nav class="sidebar-nav">
+      <div class="topbar-right">
 
-        <p class="nav-heading" data-i18n="mainMenu">MAIN MENU</p>
+        <div class="language-selector">
+          <span>🌐</span>
+          <select id="languageSelect" aria-label="Select Language">
+            <option value="bn">বাংলা</option>
+            <option value="en">English</option>
+          </select>
+        </div>
 
-        <button class="nav-link active" data-page="dashboard">
-          <span class="nav-icon">▦</span>
-          <span data-i18n="dashboard">Dashboard</span>
-        </button>
+        <div class="user-avatar" id="userAvatar">R</div>
 
-        <button class="nav-link" data-page="billing">
-          <span class="nav-icon">🧾</span>
-          <span data-i18n="newBill">New Bill</span>
-        </button>
-
-        <button class="nav-link" data-page="foods">
-          <span class="nav-icon">🍛</span>
-          <span data-i18n="foodMenu">Food Menu</span>
-        </button>
-
-        <button class="nav-link" data-page="categories">
-          <span class="nav-icon">▤</span>
-          <span data-i18n="categories">Food Categories</span>
-        </button>
-
-        <p class="nav-heading" data-i18n="management">MANAGEMENT</p>
-
-        <button class="nav-link" data-page="history">
-          <span class="nav-icon">📋</span>
-          <span data-i18n="billHistory">Bill History</span>
-        </button>
-
-        <button class="nav-link" data-page="reports">
-          <span class="nav-icon">📊</span>
-          <span data-i18n="reports">Sales Reports</span>
-        </button>
-
-        <button class="nav-link" data-page="settings">
-          <span class="nav-icon">⚙️</span>
-          <span data-i18n="settings">Settings</span>
-        </button>
-
-      </nav>
-
-      <div class="sidebar-footer">
-        <span>QuickBill</span>
-        <small>Version 2.0</small>
       </div>
 
-    </aside>
+    </header>
 
+    <!-- Page Container -->
+    <section class="page-container" id="pageContainer">
 
-    <!-- Main Content -->
-    <main class="main-content">
+      <!-- Dashboard -->
+      <section class="page-section" id="dashboardPage">
 
-      <!-- Topbar -->
-      <header class="topbar">
-
-        <div class="topbar-left">
+        <div class="welcome-section">
+          <div>
+            <h2 id="welcomeTitle" data-i18n="welcome">
+              QuickBill-এ স্বাগতম!
+            </h2>
+            <p id="welcomeText">
+              আপনার রেস্টুরেন্টের সম্পূর্ণ হিসাব পরিচালনা করুন।
+            </p>
+          </div>
 
           <button
             type="button"
-            class="menu-toggle"
-            id="menuToggle"
-            aria-label="Toggle Menu">
-            ☰
+            class="primary-btn"
+            data-page="billing">
+            + <span data-i18n="createBill">নতুন বিল তৈরি করুন</span>
           </button>
-
-          <div>
-            <h1 id="pageTitle">Dashboard</h1>
-            <p id="pageSubtitle">Restaurant Overview</p>
-          </div>
-
         </div>
 
-        <div class="topbar-right">
+        <!-- Statistics -->
+        <div class="stats-grid">
 
-          <div class="language-selector">
-            <span>🌐</span>
-            <select id="languageSelect" aria-label="Select Language">
-              <option value="bn">বাংলা</option>
-              <option value="en">English</option>
-            </select>
-          </div>
-
-          <div class="user-avatar" id="userAvatar">R</div>
-
-        </div>
-
-      </header>
-
-
-      <!-- Dynamic Page Content -->
-      <section class="page-container" id="pageContainer">
-
-        <!-- Dashboard -->
-        <section class="page-section" id="dashboardPage">
-
-          <div class="welcome-section">
+          <div class="stat-card">
+            <div class="stat-icon green">৳</div>
             <div>
-              <h2 id="welcomeTitle">স্বাগতম QuickBill-এ!</h2>
-              <p id="welcomeText">
-                আপনার রেস্টুরেন্টের সম্পূর্ণ হিসাব পরিচালনা করুন।
-              </p>
+              <p data-i18n="todaySales">আজকের বিক্রি</p>
+              <h2 id="todaySales">৳ 0</h2>
             </div>
-
-            <button
-              type="button"
-              class="primary-btn"
-              data-page="billing">
-              + <span data-i18n="createBill">Create New Bill</span>
-            </button>
           </div>
 
-
-          <div class="stats-grid">
-
-            <div class="stat-card">
-              <div class="stat-icon green">৳</div>
-              <div>
-                <p data-i18n="todaySales">Today's Sales</p>
-                <h2 id="todaySales">৳ 0</h2>
-              </div>
+          <div class="stat-card">
+            <div class="stat-icon blue">🧾</div>
+            <div>
+              <p data-i18n="todayBills">আজকের বিল</p>
+              <h2 id="todayBills">0</h2>
             </div>
-
-            <div class="stat-card">
-              <div class="stat-icon blue">🧾</div>
-              <div>
-                <p data-i18n="todayBills">Today's Bills</p>
-                <h2 id="todayBills">0</h2>
-              </div>
-            </div>
-
-            <div class="stat-card">
-              <div class="stat-icon orange">🍛</div>
-              <div>
-                <p data-i18n="totalFoods">Total Foods</p>
-                <h2 id="totalFoods">0</h2>
-              </div>
-            </div>
-
-            <div class="stat-card">
-              <div class="stat-icon purple">▤</div>
-              <div>
-                <p data-i18n="totalCategories">Total Categories</p>
-                <h2 id="totalCategories">0</h2>
-              </div>
-            </div>
-
           </div>
 
+          <div class="stat-card">
+            <div class="stat-icon orange">🍛</div>
+            <div>
+              <p data-i18n="totalFoods">মোট খাবার</p>
+              <h2 id="totalFoods">0</h2>
+            </div>
+          </div>
 
-          <div class="dashboard-grid">
+          <div class="stat-card">
+            <div class="stat-icon purple">▤</div>
+            <div>
+              <p data-i18n="totalCategories">মোট বিভাগ</p>
+              <h2 id="totalCategories">0</h2>
+            </div>
+          </div>
 
-            <div class="content-card">
-              <div class="card-header">
-                <h3 data-i18n="recentBills">Recent Bills</h3>
+        </div>
 
-                <button
-                  type="button"
-                  class="text-btn"
-                  data-page="history"
-                  data-i18n="viewAll">
-                  View All
-                </button>
-              </div>
+        <!-- Dashboard Cards -->
+        <div class="dashboard-grid">
 
-              <div id="recentBillsContainer">
-                <div class="empty-state">
-                  <span>🧾</span>
-                  <p data-i18n="noBills">No bills available yet.</p>
-                </div>
-              </div>
+          <div class="content-card">
+
+            <div class="card-header">
+              <h3 data-i18n="recentBills">সাম্প্রতিক বিল</h3>
+
+              <button
+                type="button"
+                class="text-btn"
+                data-page="history"
+                data-i18n="viewAll">
+                সব দেখুন
+              </button>
             </div>
 
-
-            <div class="content-card">
-              <div class="card-header">
-                <h3 data-i18n="quickActions">Quick Actions</h3>
-              </div>
-
-              <div class="quick-actions">
-
-                <button type="button" data-page="billing">
-                  <span>🧾</span>
-                  <span data-i18n="newBill">New Bill</span>
-                </button>
-
-                <button type="button" data-page="foods">
-                  <span>🍛</span>
-                  <span data-i18n="addFood">Add Food</span>
-                </button>
-
-                <button type="button" data-page="categories">
-                  <span>▤</span>
-                  <span data-i18n="addCategory">Add Category</span>
-                </button>
-
-                <button type="button" data-page="settings">
-                  <span>⚙️</span>
-                  <span data-i18n="restaurantSettings">Restaurant Settings</span>
-                </button>
-
+            <div id="recentBillsContainer">
+              <div class="empty-state">
+                <span>🧾</span>
+                <p data-i18n="noBills">এখনো কোনো বিল নেই</p>
               </div>
             </div>
 
           </div>
 
-        </section>
+          <div class="content-card">
 
+            <div class="card-header">
+              <h3 data-i18n="quickActions">দ্রুত কাজ</h3>
+            </div>
 
-        <!-- Other pages will be rendered by JavaScript -->
-        <section id="dynamicPage" class="page-section" hidden></section>
+            <div class="quick-actions">
+
+              <button type="button" data-page="billing">
+                <span>🧾</span>
+                <span data-i18n="newBill">নতুন বিল</span>
+              </button>
+
+              <button type="button" data-page="foods">
+                <span>🍛</span>
+                <span data-i18n="addFood">খাবার যোগ করুন</span>
+              </button>
+
+              <button type="button" data-page="categories">
+                <span>▤</span>
+                <span data-i18n="addCategory">বিভাগ যোগ করুন</span>
+              </button>
+
+              <button type="button" data-page="settings">
+                <span>⚙️</span>
+                <span data-i18n="restaurantSettings">
+                  রেস্টুরেন্ট সেটিংস
+                </span>
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
 
       </section>
 
+      <!-- Dynamic Pages -->
+      <section
+        id="dynamicPage"
+        class="page-section"
+        hidden>
+      </section>
 
-      <!-- Footer -->
-      <footer class="app-footer">
-        <p>
-          © <span id="currentYear"></span>
-          QuickBill. All rights reserved.
-        </p>
-      </footer>
+    </section>
 
-    </main>
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>
+        © <span id="currentYear"></span>
+        QuickBill. All rights reserved.
+      </p>
+    </footer>
 
-  </div>
+  </main>
 
+</div>
 
-  <!-- Notification -->
-  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+<!-- Toast Notifications -->
+<div
+  id="toastContainer"
+  class="toast-container"
+  aria-live="polite">
+</div>
 
+<!-- Modal -->
+<div id="modalRoot"></div>
 
-  <!-- Modal -->
-  <div id="modalRoot"></div>
-
-
-  <!-- Print Area -->
-  <div id="printArea" class="print-area"></div>
-
+<!-- Print Area -->
+<div id="printArea" class="print-area"></div>
 
 </body>
 </html>
