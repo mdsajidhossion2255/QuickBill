@@ -1,0 +1,36 @@
+{
+  "name": "quickbill",
+  "version": "1.0.0",
+  "description": "QuickBill Restaurant Billing Software",
+  "main": "main.js",
+  "author": "QuickBill",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win nsis"
+  },
+  "devDependencies": {
+    "electron": "^39.0.0",
+    "electron-builder": "^26.0.0"
+  },
+  "build": {
+    "appId": "com.quickbill.restaurant",
+    "productName": "QuickBill",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "index.html",
+      "style.css",
+      "script.js",
+      "main.js"
+    ],
+    "win": {
+      "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  }
+}
